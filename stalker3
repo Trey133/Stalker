@@ -1,0 +1,988 @@
+#!/usr/bin/env python3
+# REPLACE WITH: subprocess
+import os
+#
+import requests
+import subprocess
+# IMPORTED FOR: OS Control
+import webbrowser
+# IMPORTED FOR: Webbrowser Control For Stalker Websearch
+import time
+import sys
+import pygame as pg
+# IMPORTED FOR: Keyboard Control
+from pygame.locals import *
+from bs4 import BeautifulSoup as bs
+# IMPORTED FOR: Stalker Websearch
+from termcolor import colored
+# IMPORTED FOR: Color *of course*
+# IMPORT FILES FROM /USR/SHARE/STALKER
+sys.path.insert(0, '/usr/share/stalker')
+# INITIALIZE PYGAME
+pg.init()
+# IMPORT THE GEARS TO RUN THE PROGRAM
+import gears
+# IMPORT VARIABLES FOR Stalker
+import variables as vars
+gears.stalker_logo()
+# INTRODUCTION
+print(colored("I\'ll Need Some Information About Your Target Before We Begin...",'yellow',attrs=['bold']))
+print(colored("\n\nFirst, Middle, And Last Name Are Mandatory For Anything To Work.\nCity And State Are Required For The Full Functionality Of Stalker\nBut Not For The CaseFile Creator.",'red',attrs=['bold','underline']))
+try:
+# ASK USER TO HIT RETURN
+	resume_program = input(colored("\n\n         Press Return To Continue",'magenta',attrs=['bold']))
+# IF USER HITS ANYTHING OTHER THAN RETURN,
+	if resume_program != "":
+# SAY GOODBYE
+		print("GoodBye!")
+# AND EXIT
+		sys.exit(0)
+	else:
+		pass
+# IF USER HITS CTRL^C
+except KeyboardInterrupt:
+	print(colored("\nUSER HIT CTRL^C!!!\nTERMINATING STALKER...",'red',attrs=['bold']))
+# EXIT PROGRAM
+	sys.exit(0)
+##  STATE ABBREVIATIONS FOR Stalker WEBSEARCH
+abv = {"Alabama":"AL","Alaska":"AK","Arizona":"AZ","Arkansas":"AR","California":"CA","Colorado":"CO","Connecticut":"CT","Delaware":"DE","Florida":"FL","Georgia":"GA","Hawaii":"HI","Idaho":"ID","Illinois":"IL","Indiana":"IN","Iowa":"IA","Kansas":"KS","Kentucky":"KY","Louisiana":"LA","Maine":"ME","Maryland":"MD","Massachusetts":"MA","Michigan":"MI","Minnesota":"MN","Mississippi":"MS","Missouri":"MO","Montana":"MT","Nebraska":"NE","Nevada":"NV","New Hampshire":"NH","New Jersey":"NJ","New Mexico":"NM","New York":"NY","North Carolina":"NC","North Dakota":"ND","Ohio":"OH","Oklahoma":"OK","Oregon":"OR","Pennsylvania":"PA","Rhode Island":"RI","South Carolina":"SC","South Dakota":"SD","Tennessee":"TN","Texas":"TX","Utah":"UT","Vermont":"VT","Virginia":"VA","Washington":"WA","West Virginia":"WV","Wisconsin":"WI","Wyoming":"WY","Washington DC":"DC"}
+##  GOOGLE LOGO
+google_logo = colored("G",'red',attrs=['bold'])+colored("O",'blue',attrs=['bold'])+colored("O",'yellow',attrs=['bold'])+colored("G",'magenta',attrs=['bold'])+colored("L",'green',attrs=['bold'])+colored("E",'cyan',attrs=['bold'])
+#===========================================================================================
+##  START PROFILE_MANAGER FOR CASEFILE CREATOR
+#===========================================================================================
+def profile_manager():
+	gears.clear()
+	sep_alt = "\n##################################################\n##################################################\n##################################################\n"
+	sep = "\n\n==================================================\n\n"
+###   GET VARIABLES FOR NEW PROFILE
+	try:
+		name = str(vars.first_name)+"_"+str(vars.middle_name)+"_"+str(vars.last_name)
+		address = str(vars.address)
+		age = str(vars.age)
+		dob = str(vars.dob)
+		phone = str(vars.phone)
+		sec_phone = str(vars.sec_phone)
+		employer = str(vars.employer)
+		employer_phone = str(vars.employer_phone)
+		employer_address = str(vars.employer_address)
+		job_title = str(vars.job_title)
+		hobbies = str(vars.hobbies)
+###   IF USER HITS CTRL^C
+	except KeyboardInterrupt:
+		gears.clear()
+		print(colored("\n\n\n\n\nUSER HIT CTRL^C\n   PROFILE NOT ADDED!!!",'red',attrs=['bold','underline']))
+		time.sleep(2)
+###   RESTART STALKER
+		os.execv(sys.executable, ['python'] + sys.argv)
+##  OPEN Stalker PROFILE AND ADD USER INPUT INFORMATION
+	with open("/usr/share/stalker/profiles/."+name,'w') as profile:
+		profile.write("\n\n\n"+sep_alt+"Name: \n"+name+sep+"Age: \n"+age+sep+"DOB: \n"+dob+sep+"Address: \n"+address+sep+"Primary Phone: \n"+phone+sep+"Secondary Phone: \n"+sec_phone+sep+"Employer: \n"+employer+sep+"Job Title: \n"+job_title+sep+"Employer Phone: \n"+employer_phone+sep+"Emplyer Address: \n"+employer_address+sep+"Vehicles: \n")
+		profile.close()
+##  ADD VEHICLES TO PROFILE
+	gears.add_vehicle()
+## OPEN Stalker PROFILE
+	with open("/usr/share/stalker/profiles/."+name,'a') as profile:
+		profile.write(sep+"\nKnown Emails: \n")
+		profile.close()
+##  ASK USER TO ADD EMAIL ADDRESSES TO PROFILE
+	while True:
+		try:
+			print(colored("Press Return To Add An Email Address\n",'yellow',attrs=['bold','underline']))
+			print(colored("Press Return On Empty Line When You Are Finished\n",'red',attrs=['bold']))
+			new_email = input(colored("Enter Targets Known Email Addresses: ",'red',attrs=['bold']))
+##  IF USER ENTERED AN EMAIL
+			if len(new_email) > 1:
+##  OPEN Stalker PROFILE AND ADD EMAIL
+				with open("/usr/share/stalker/profiles/."+name,'a') as profile:
+					profile.write("\n "+new_email)
+					profile.close()
+##  IF USER DID NOT ENTER AN EMAIL
+			else:
+				print(colored("\nEmail Addresses Have Been Added! ",'yellow',attrs=['bold']))
+##  OPEN Stalker PROFILE AND ADD SEPERATOR
+				with open("/usr/share/stalker/profiles/."+name,'a') as profile:
+					profile.write(sep)
+					profile.close()
+				break
+##  IF USER HITS CTRL^C
+		except KeyboardInterrupt:
+##  ADD EMAILS TO Stalker PROFILE
+			print(colored("\nEmail Addresses Have Been Added! ",'yellow',attrs=['bold']))
+			with open("/usr/share/stalker/profiles/."+name,'a') as profile:
+##  ADD SEPERATOR
+				profile.write(sep)
+				profile.close()
+			break
+	with open("/usr/share/stalker/profiles/."+name,'a') as profile:
+		profile.write("\nImmediate Family: \n")
+		profile.close()
+	while True:
+		try:
+			print(colored("Press Return To Add Family Member\n",'yellow',attrs=['bold','underline']))
+			print(colored("Press Return On Empty Line When You Are Finished\n",'red',attrs=['bold']))
+			fams = input(colored("Enter Immediate Family Members: ",'red',attrs=['bold']))
+			if len(fams) > 1:
+				with open("/usr/share/stalker/profiles/."+name,'a') as profile:
+					relation = input(colored("Relationship To "+name+"?: ",'blue',attrs=['bold']))
+					profile.write(fams+"  :  "+relation+"\n")
+					profile.close()
+			else:
+				print(colored("\nFamily Members Have Been Added! ",'yellow',attrs=['bold']))
+				with open("/usr/share/stalker/profiles/."+name,'a') as profile:
+					profile.write(sep)
+					profile.close()
+				break
+		except KeyboardInterrupt:
+			print(colored("\nFamily Members Have Been Added! ",'yellow',attrs=['bold']))
+			with open("/usr/share/stalker/profiles/."+name,'a') as profile:
+				profile.write(sep)
+				profile.close()
+			break
+	with open("/usr/share/stalker/profiles/."+name,'a') as profile:
+		profile.write("\nAssociates: \n")
+		profile.close()
+	while True:
+		try:
+			print(colored("Press Return To Add Associate\n",'yellow',attrs=['bold','underline']))
+			print(colored("Press Return On Empty Line When You Are Finished\n",'red',attrs=['bold']))
+			asc = input(colored("Enter Associate\'s Name: ",'red',attrs=['bold']))
+			if len(asc) > 1:
+				with open("/usr/share/stalker/profiles/."+name,'a') as profile:
+					profile.write(asc+"\n")
+					profile.close()
+			else:
+				print(colored("\nAssociates Have Been Added! ",'yellow',attrs=['bold']))
+				with open("/usr/share/stalker/profiles/."+name,'a') as profile:
+					profile.write(sep)
+					profile.close()
+			break
+		except KeyboardInterrupt:
+			print(colored("\nAssociates Have Been Added! ",'yellow',attrs=['bold']))
+			with open("/usr/share/stalker/profiles/."+name,'a') as profile:
+				profile.write(sep)
+				profile.close()
+			break
+	gears.social_media()
+	with open("/usr/share/stalker/profiles/."+name,'a') as profile:
+		profile.write("Hobbies: \n"+hobbies+sep+"Reference URLs: \n")
+		profile.close()
+	while True:
+		try:
+			print(colored("Press Return To Add URL\n",'yellow',attrs=['bold','underline']))
+			print(colored("Press Return On Empty Line When You Are Finished\n",'red',attrs=['bold']))
+			ref_url = input(colored("Enter Reference URLs: ",'red',attrs=['bold']))
+			if len(ref_url) > 3:
+				with open("/usr/share/stalker/profiles/."+name,'a') as profile:
+					profile.write(ref_url+"\n")
+					profile.close()
+			else:
+				print(colored("\nReference URLs Have Been Added! ",'yellow',attrs=['bold']))
+				with open("/usr/share/stalker/profiles/."+name,'a') as profile:
+					profile.write(sep)
+					profile.close()
+				break
+		except KeyboardInterrupt:
+			print(colored("\nReference URLs Have Been Added! ",'yellow',attrs=['bold']))
+			with open("/usr/share/stalker/profiles/."+name,'a') as profile:
+				profile.write(sep)
+				profile.close()
+			try:
+				try:
+					gears.remove_gpg()
+				except Exception as e:
+					print(e)
+					subprocess.call(":>"+name+".gpg")
+					subprocess.call("rm "+name+".gpg")
+			except Exception as e:
+				gears.clear()
+				print(e)
+				time.sleep(2)
+				pass
+	try:
+		try:
+			gears.encrypt_file()
+		except Exception as e:
+			print(e)
+			subprocess.call(["gpg","-r","--default-recipient","terminal","--yes","-e","/usr/share/stalker/profiles/.",vars.name])
+	except Exception as e:
+		print(e)
+		try:
+			os.system("gpg -r --default-recipient terminal --yes -u /usr/share/stalker/profiles/."+vars.name)
+		except Exception as e:
+			print(colored(e,'red',attrs=['bold']))
+	try:
+		try:
+			gears.remove_unencrypted()
+		except Exception as e:
+			print(e)
+			subprocess.call([":",">","/usr/share/stalker/profiles/.",vars.name])
+	except Exception as e:
+		print(e)
+	try:
+		os.system(": > /usr/share/stalker/profiles/."+vars.name)
+	except Exception as e:
+		print(colored(e,'red',attrs=['bold']))
+	try:
+		subprocess.call(["rm","/usr/share/stalker/profiles/.",vars.name])
+	except Exception as e:
+		print(e)
+	try:
+		os.system("rm /usr/share/stalker/profiles/."+vars.name)
+	except Exception as e:
+		print(colored(e,'red',attrs=['bold']))
+#===============================================================================================================
+##  END PROFILE_MANAGER
+#===============================================================================================================
+################################################################################################################
+################################################################################################################
+def goodbye():
+    print(colored("""
+  ____  ___   ___  ____  ______   _______ _ 
+ / ___|/ _ \ / _ \|  _ \| __ ) \ / / ____| |
+| |  _| | | | | | | | | |  _  \\ V /|  _| | |
+| |_| | |_| | |_| | |_| | |_) || | | |___|_|
+ \____|\___/ \___/|____/|____/ |_| |_____(_)
+                                            
+""",'yellow',attrs=['bold']))
+######################################################################
+######################################################################
+######################################################################
+#FORMAT
+def stalker():
+    with open("/root/testing/stalker/profiles/"+vars.first_name+"_"+vars.last_name+".txt",'w') as profile:
+        profile.write(vars.first_name+" "+vars.middle_name+" "+vars.last_name)
+        profile.write("\n##################################################################################################\n")
+        profile.close()
+    try:
+        print(colored("Searching Pipl.com For Target...",'blue',attrs=['bold']))
+        url = "https://www.pipl.com/search/?q="+vars.first_name+"+"+vars.middle_name+"+"+vars.last_name+"&l="+vars.city+"%2C+"+vars.state+"&sloc=US|"+abv[vars.state]+"|"+vars.city+"&in=5"
+        time.sleep(2)
+        try:
+            page = requests.get(url)
+            html = page.text
+            text_only = bs(html, 'html.parser')
+            text = text_only.get_text()
+            data = text.encode('ascii', 'ignore').decode('ascii')
+            with open("/root/testing/stalker/profiles/"+vars.first_name+"_"+vars.last_name+".txt",'a') as profile:
+                profile.write("\n##################################################################################################")
+                profile.write("\n"+data+"\n\n\n")
+                profile.close()
+        except Exception as e:
+            print(e)
+        try:
+            out = subprocess.check_output(["wget","-qO-",url,"|","html2text"])
+            print(out)
+        except Exception as e:
+            print(colored(e,'red',attrs=['bold']))
+            print(colored("I wasn\'t able to get that site...\nLet\'s try this one.",'yellow',attrs=['bold']))
+            print(colored("Searching FindMugShots.com For Target...",'blue',attrs=['bold']))
+        url = "https://www.findmugshots.com/arrests/"+vars.first_name+"_"+vars.last_name+"_"+abv[vars.state]
+        time.sleep(2)
+        try:
+            page = requests.get(url)
+            html = page.text
+            text_only = bs(html, 'html.parser')
+            text = text_only.get_text()
+            data = text.encode('ascii', 'ignore').decode('ascii')
+            with open("/root/testing/stalker/profiles/"+vars.first_name+"_"+vars.last_name+".txt",'a') as profile:
+                profile.write("\n##################################################################################################")
+                profile.write("\n"+data+"\n\n\n")
+            profile.close()
+        except Exception as e:
+            print(e)
+        try:
+#FORMAT
+	        out = subprocess.check_output(["wget","-qO-",url,"|","html2text"])
+		print(colored(out,'red',attrs=['bold']))
+	    except Exception as e:
+		print(colored(e,'red',attrs=['bold']))
+		print(colored("I wasn\'t able to get that site...\nLet\'s try this one.",'yellow',attrs=['bold']))
+        print(colored("Searching MugShots.com For Target...",'blue',attrs=['bold']))
+        url = "http://mugshots.com/search.html?q="+vars.first_name+"+"+vars.last_name
+        time.sleep(2)
+        try:
+            page = requests.get(url)
+            html = page.text
+            text_only = bs(html, 'html.parser')
+            text = text_only.get_text()
+            data = text.encode('ascii', 'ignore').decode('ascii')
+            with open("/root/testing/stalker/profiles/"+vars.first_name+"_"+vars.last_name+".txt",'a') as profile:
+                profile.write("\n##################################################################################################")
+                profile.write("\n"+data+"\n\n\n")
+            profile.close()
+        except Exception as e:
+            print(e)
+	    try:
+	        out = subprocess.check_output(["wget","-qO-",url,"|","html2text"])
+		print(colored(out,'red',attrs=['bold']))
+            except Exception as e:
+		print(colored(e,'red',attrs=['bold']))
+                print(colored("I wasn\'t able to get that site...\nLet\'s try this one.",'yellow',attrs=['bold']))
+        print(colored("Searching WhitePages.plus For Target",'blue',attrs=['bold']))
+        url = "https://whitepages.plus/n/"+vars.first_name+"_"+vars.last_name+"/location/"+vars.city+"%252C_"+abv[vars.state]
+        time.sleep(2)
+        try:
+            page = requests.get(url)
+            html = page.text
+            text_only = bs(html, 'html.parser')
+            text = text_only.get_text()
+            data = text.encode('ascii', 'ignore').decode('ascii')
+            with open("/root/testing/stalker/profiles/"+vars.first_name+"_"+vars.last_name+".txt",'a') as profile:
+                profile.write("\n##################################################################################################")
+                profile.write("\n"+data+"\n\n\n")
+            profile.close()
+        except Exception as e:
+            print(e)
+            try:
+                out = subprocess.check_output(["wget","-qO-",url, "|", "html2text"])
+		print(colored(out,'red',attrs=['bold']))
+            except Exception as e:
+		print(colored(e,'red',attrs=['bold']))
+                print(colored("I wasn\'t able to get that site...\nLet\'s try this one.",'yellow',attrs=['bold']))
+        print(colored("Searching Zabasearch.com For Target...",'blue',attrs=['bold']))
+        url = "http://www.zabasearch.com/people/"+vars.first_name+"+"+vars.last_name+"/"+abv[vars.state]+"/"
+        time.sleep(2)
+        try:
+            page = requests.get(url)
+            html = page.text
+            text_only = bs(html, 'html.parser')
+            text = text_only.get_text()
+            data = text.encode('ascii', 'ignore').decode('ascii')
+            with open("/root/testing/stalker/profiles/"+vars.first_name+"_"+vars.last_name+".txt",'a') as profile:
+                profile.write("\n##################################################################################################")
+                profile.write("\n"+data+"\n\n\n")
+            profile.close()
+        except Exception as e:
+            print(e)
+            try:
+                out = subprocess.check_output(["wget","-qO-",url,"|","html2text"])
+		print(colored(out,'red',attrs=['bold']))
+            except Exception as e:
+                print(colored(e,'red',attrs=['bold']))
+                print(colored("I wasn\'t able to get that site...\nLet\'s try this one.",'yellow',attrs=['bold']))
+###
+        print(colored("Searching PeekYou.com For Target...",'blue',attrs=['bold']))
+        url = "http://www.peekyou.com/usa/"+vars.state+"/"+vars.first_name+"_"+vars.last_name
+        time.sleep(2)
+        try:
+            page = requests.get(url)
+            html = page.text
+            text_only = bs(html, 'html.parser')
+            text = text_only.get_text()
+            data = text.encode('ascii', 'ignore').decode('ascii')
+            with open("/root/testing/stalker/profiles/"+vars.first_name+"_"+vars.last_name+".txt",'a') as profile:
+                profile.write("\n##################################################################################################")
+                profile.write("\n"+data+"\n\n\n")
+            profile.close()
+        except Exception as e:
+            print(e)
+            try:
+                out = subprocess.check_output(["wget","-qO-",url,"|","html2text"])
+                print(out)
+            except Exception as e:
+                print(colored(e,'red',attrs=['bold']))
+                print(colored("I wasn\'t able to get that site...\nLet\'s try this one.",'yellow',attrs=['bold']))
+###
+	print(colored("Searching Spokeo.com For Target...",'blue',attrs=['bold']))
+        url = "https://www.spokeo.com/"+vars.first_name+"-"+vars.last_name
+        time.sleep(2)
+        try:
+            page = requests.get(url)
+            html = page.text
+            text_only = bs(html, 'html.parser')
+            text = text_only.get_text()
+            data = text.encode('ascii', 'ignore').decode('ascii')
+            with open("/root/testing/stalker/profiles/"+vars.first_name+"_"+vars.last_name+".txt",'a') as profile:
+                profile.write("\n##################################################################################################")
+                profile.write("\n"+data+"\n\n\n")
+            profile.close()
+        except Exception as e:
+            print(e)
+            try:
+                out = subprocess.check_output(["wget","-qO-",url,"|","html2text"])
+                print(out)
+            except Exception as e:
+                print(colored(e,'red',attrs=['bold']))
+                print(colored("I wasn\'t able to get that site...\nLet\'s try this one.",'yellow',attrs=['bold']))
+###
+	print(colored("Searching LinkedIn.com For Target...",'blue',attrs=['bold']))
+        url = "https://www.linkedin.com/pub/dir/"+vars.first_name+"/"+vars.last_name+"?trk=uno-reg-guest-home-name-search"
+        time.sleep(2)
+        try:
+            page = requests.get(url)
+            html = page.text
+            text_only = bs(html, 'html.parser')
+            text = text_only.get_text()
+            data = text.encode('ascii', 'ignore').decode('ascii')
+            with open("/root/testing/stalker/profiles/"+vars.first_name+"_"+vars.last_name+".txt",'a') as profile:
+                profile.write("\n##################################################################################################")
+                profile.write("\n"+data+"\n\n\n")
+            profile.close()
+        except Exception as e:
+            print(e)
+            try:
+                out = subprocess.check_output(["wget","-qO-",url,"|","html2text"])
+                print(out)
+            except Exception as e:
+                print(colored(e,'red',attrs=['bold']))
+                print(colored("I wasn\'t able to get that site...\nLet\'s try this one.",'yellow',attrs=['bold']))
+###
+        print(colored("No Search Would Be Complete Without ",'blue',attrs=['bold'])+google_logo)
+        url = "https://www.google.com/#q="+vars.first_name+"+"+vars.middle_name+"+"+vars.last_name+"+"+vars.city+"+"+vars.state
+        time.sleep(2)
+        try:
+            page = requests.get(url)
+            html = page.text
+            text_only = bs(html, 'html.parser')
+            text = text_only.get_text()
+            data = text.encode('ascii', 'ignore').decode('ascii')
+            with open("/root/testing/stalker/profiles/"+vars.first_name+"_"+vars.last_name+".txt",'a') as profile:
+                profile.write("\n##################################################################################################")
+                profile.write("\n"+data+"\n\n\n")
+            profile.close()
+        except Exception as e:
+            print(colored(e,'red',attrs=['bold']))
+            print(colored("I wasn\'t able to reach ",'red',attrs=['bold'])+google_logo+colored("...\nI guess this search is complete afterall.",'red',attrs=['bold']))
+            time.sleep(2)
+    except KeyError as e:
+	print(colored(e,'red',attrs=['bold']))
+
+#############################################
+#############################################
+#############################################
+def stalker_gui():
+    try:
+	print(colored("Your default web browser will open in a moment...\n Do not close it until all ",'yellow',attrs=['bold'])+colored("10",'red',attrs=['bold','underline'])+colored(" sites are loaded!!!",'yellow',attrs=['bold']))
+	time.sleep(3)
+### PIPL.COM
+        print(colored("Searching Pipl.com For Target...",'blue',attrs=['bold']))
+        url = "https://www.pipl.com/search/?q="+vars.first_name+"+"+vars.middle_name+"+"+vars.last_name+"&l="+vars.city+"%2C+"+vars.state+"&sloc=US|"+abv[vars.state]+"|"+vars.city+"&in=5"
+        time.sleep(2)
+        try:
+            webbrowser.open(url)
+            time.sleep(2)
+        except IOError:
+            print(colored("I wasn\'t able to get that site...\nLet\'s try this one.",'yellow',attrs=['bold']))
+	    time.sleep(2)
+### FINDMUGSHOTS.COM
+        print(colored("Searching FindMugShots.com For Target...",'blue',attrs=['bold']))
+        url = "https://www.findmugshots.com/arrests/"+vars.first_name+"_"+vars.last_name+"_"+abv[vars.state]
+        time.sleep(2)
+	try:
+            webbrowser.open(url)
+            time.sleep(2)
+        except SysCallError:
+            print(colored("I wasn\'t able to get that site...\nLet\'s try this one.",'yellow',attrs=['bold']))
+### MUGSHOTS.COM
+        print(colored("Searching MugShots.com For Target...",'blue',attrs=['bold']))
+        url = "http://mugshots.com/search.html?q="+vars.first_name+"+"+vars.last_name
+        time.sleep(2)
+        try:
+            webbrowser.open(url)
+            time.sleep(2)
+        except SysCallError:
+            print(colored("I wasn\'t able to get that site...\nLet\'s try this one.",'yellow',attrs=['bold']))
+### WHITEPAGES.PLUS
+        print(colored("Searching WhitePages.plus For Target",'blue',attrs=['bold']))
+        url = "https://whitepages.plus/n/"+vars.first_name+"_"+vars.last_name+"/location/"+vars.city+"%252C_"+abv[vars.state]
+        time.sleep(2)
+        try:
+            webbrowser.open(url)
+            time.sleep(2)
+        except SysCallError:
+            print(colored("I wasn\'t able to get that site...\nLet\'s try this one.",'yellow',attrs=['bold']))
+### ZABASEARCH.COM
+        print(colored("Searching Zabasearch.com For Target...",'blue',attrs=['bold']))
+        url = "http://www.zabasearch.com/people/"+vars.first_name+"+"+vars.last_name+"/"+abv[vars.state]+"/"
+        time.sleep(2)
+        try:
+            webbrowser.open(url)
+            time.sleep(2)
+        except SysCallError:
+            print(colored("I wasn\'t able to get that site...\nLet\'s try this one.",'yellow',attrs=['bold']))
+### PEEKYOU.COM
+        print(colored("Searching PeekYou.com For Target...",'blue',attrs=['bold']))
+        url = "http://www.peekyou.com/usa/"+vars.state+"/"+vars.first_name+"_"+vars.last_name
+        time.sleep(2)
+        try:
+            webbrowser.open(url)
+            time.sleep(2)
+        except SysCallError:
+            print(colored("I wasn\'t able to get that site...\nLet\'s try this one.",'yellow',attrs=['bold']))
+### SPOKEO.COM
+        print(colored("Searching Spokeo.com For Target...",'blue',attrs=['bold']))
+        url = "https://www.spokeo.com/"+vars.first_name+"-"+vars.last_name
+        time.sleep(2)
+        try:
+            webbrowser.open(url)
+            time.sleep(2)
+        except SysCallError:
+            print(colored("I wasn\'t able to get that site...\nLet\'s try this one.",'yellow',attrs=['bold']))
+### LINKEDIN.COM
+        print(colored("Searching LinkedIn.com For Target...",'blue',attrs=['bold']))
+        url = "https://www.linkedin.com/pub/dir/"+vars.first_name+"/"+vars.last_name+"?trk=uno-reg-guest-home-name-search"
+        time.sleep(2)
+        try:
+            webbrowser.open(url)
+            time.sleep(2)
+        except SysCallError:
+            print(colored("I wasn\'t able to get that site...\nLet\'s try this one.",'yellow',attrs=['bold']))
+### PEOPLELOOKER.COM
+        print(colored("Searching PeopleLooker.com For Target...",'blue',attrs=['bold']))
+        url = "https://www.peoplelooker.com/lp/400200/2/loading?fn="+vars.first_name+"&ln="+vars.last_name+"&state="+abv[vars.state]
+        time.sleep(2)
+        try:
+            webbrowser.open(url)
+            time.sleep(2)
+        except SysCallError:
+            print(colored("I wasn\'t able to get that site...\nLet\'s try this one.",'yellow',attrs=['bold']))
+### GOOGLE.COM
+        print(colored("No Search Would Be Complete Without ",'blue',attrs=['bold'])+google_logo)
+        url = "https://www.google.com/#q="+vars.first_name+"+"+vars.middle_name+"+"+vars.last_name+"+"+vars.city+"+"+vars.state
+        time.sleep(2)
+        try:
+            webbrowser.open(url)
+            time.sleep(2)
+        except SysCallError:
+            print(colored("I wasn\'t able to get that site...\n",'red',attrs=['bold']))
+    except KeyError as e:
+	print(colored(e,'red',attrs=['bold']))
+def stalker_logo2():
+    gears.clear()
+    print(colored("""
+   _  _     _  _     _  _     _  _     _  _   
+ _| || |_ _| || |_ _| || |_ _| || |_ _| || |_ 
+|_  ..  _|_  ..  _|_  ..  _|_  ..  _|_  ..  _|
+|_      _|_      _|_      _|_      _|_      _|
+  |_||_|   |_||_|   |_||_|   |_||_|   |_||_|  
+                                              
+""",'blue',attrs=['bold']))
+    print(colored("""
+    ____ _____  _    _     _  _______ ____  
+   / ___|_   _|/ \  | |   | |/ / ____|  _ \ 
+   \___ \ | | / _ \ | |   | ' /|  _| | |_) |
+    ___) || |/ ___ \| |___| . \| |___|  _ < 
+   |____/ |_/_/   \_\_____|_|\_\_____|_| \_\
+                                        
+""",'red',attrs=['bold']))
+    print(colored("""
+   _  _     _  _     _  _     _  _     _  _   
+ _| || |_ _| || |_ _| || |_ _| || |_ _| || |_ 
+|_  ..  _|_  ..  _|_  ..  _|_  ..  _|_  ..  _|
+|_      _|_      _|_      _|_      _|_      _|
+  |_||_|   |_||_|   |_||_|   |_||_|   |_||_|  
+                                              
+""",'blue',attrs=['bold']))
+    print(colored("""
+
+              CASEFILE CREATOR
+""",'red',attrs=['bold']))
+    print(colored("\n     'add\' // \'read\' // \'edit\' // \'quit\' \n",'yellow',attrs=['bold']))
+    print(colored("      //   \'stalker\'   //   \'phone\' //",'red',attrs=['bold']))
+try:
+    print(colored("\n\nIf you do not plan to create a new casefile, hit Ctrl^C now.\n\n",'cyan',attrs=['bold']))
+    gears.full_info()
+    if vars.full_information == True:
+        vars.basic_information = True
+    else:
+	gears.basic_info()
+except KeyboardInterrupt:
+    gears.stalker_logo()
+    print(colored("\nIf You Do Not Plan To Create A CaseFile, I Just Need Some Basic Info...\n",'red',attrs=['bold']))
+    try:
+        basic = input(colored("\nAre You Going To Create A CaseFile: ",'yellow',attrs=['bold']))
+    except KeyboardInterrupt:
+	gears.stalker_logo
+	print(colored("\nUser Hit Ctrl^C!!!\nTerminating Stalker...\n"))
+	sys.exit(0)
+    if len(basic)>= 1:
+        if basic == "n" or basic == "no" or basic == "N" or basic == "NO" or basic == "No":
+	    try:
+                gears.basic_info()
+	    except KeyboardInterrupt:
+	        print(colored("\nUser Hit Ctrl^C...\nExiting Stalker."))
+	        time.sleep(2)
+	        sys.exit(0)
+            gears.stalker_logo()
+            version = input(colored("\nWould you like to run stalker from a [",'yellow',attrs=['bold'])+colored("b",'red',attrs=['bold','underline'])+colored("]rowser or the [",'yellow',attrs=['bold'])+colored("t",'red',attrs=['bold','underline'])+colored("]erminal?\n   >> ",'yellow',attrs=['bold']))
+            if version == "T" or version == "t" or version == "terminal" or version == "Terminal" or version == "TERMINAL":
+                try:
+                    gears.stalker_logo()
+	            try:
+                        stalker()
+		    except KeyboardInterrupt:
+		        print(colored("Stalker Has Been Terminated By User...",'red',attrs=['bold']))
+		        time.sleep(2)
+		        pass
+		    sys.exit(0)
+                except KeyboardInterrupt:
+                    gears.clear()
+                    print(colored("\n\n\n\n\nUSER HIT CTRL^C\nSTOPPING STALKER...",'red',attrs=['bold']))
+                    time.sleep(2)
+                    pass
+            elif version == "B" or version == "b" or version == "browser" or version == "Browser" or version == "BROWSER":
+                try:
+                    gears.stalker_logo()
+                    stalker_gui()
+		    sys.exit(0)
+                except KeyboardInterrupt:
+                    gears.clear()
+                    print(colored("\n\n\n\n\nUSER HIT CTRL^C\nSTOPPING STALKER...",'red',attrsa=['bold']))
+                    time.sleep(2)
+                    pass
+            else:
+                gears.stalker_logo()
+                print(colored("\nINVALID OPTION!!!\n"))
+                pass
+        elif basic == "y" or basic == "yes" or basic == "Yes" or basic == "Y" or basic == "YES":
+            try:
+                gears.full_info()
+            except KeyboardInterrupt:
+                print(colored("I Need Some Information About Your Target Before We Begin...\nLet\'s Try Again.",'red',attrs=['bold']))
+	        time.sleep(2)
+                try:
+                    gears.full_info()
+                except KeyboardInterrupt:
+                    print(colored("\nYour Failure To Follow Basic Instructions Is Infuriating...\n",'red',attrs=['bold']))
+                    print(colored("\nBye..."))
+                    sys.exit(0)
+        elif basic == "read" or basic == "READ" or basic == "Read" or basic == "R" or basic == "r":
+            gears.stalker_logo()
+            print(colored("Available Profiles: ",'red',attrs=['bold']))
+            profile_lst = subprocess.check_output(["ls", "-a", "/usr/share/stalker/profiles/"],stderr=subprocess.PIPE, shell=False)
+            print(colored(str(profile_lst),'blue',attrs=['bold']))
+            print("\n\n")
+            try:
+                vars.read_name = input(colored("Enter Target Name: ",'red',attrs=['bold']))
+                path = "/usr/share/stalker/profiles/."+str(vars.read_name)
+                gears.clear()
+                if len(vars.read_name) > 1:
+                    try:
+                        subprocess.call(["gpg","--decrypt","/usr/share/stalker/profiles/.",vars.read_name,".gpg",">","/usr/share/stalker/profiles/.",vars.read_name])
+                    except Exception:
+                        try:
+                            os.system("gpg --decrypt /usr/share/stalker/profiles/."+vars.read_name+".gpg > /usr/share/stalker/profiles/."+vars.read_name)
+                        except Exception as e:
+                            print(colored(e,'red',attrs=['bold']))
+                            time.sleep(2)
+                            os.execv(sys.executable, ['python'] + sys.argv)
+                    time.sleep(2)
+                    try:
+                        with open("/usr/share/stalker/profiles/."+vars.read_name,'r') as profile:
+                            data = profile.read()
+                            print(colored("\n"+data,'blue',attrs=['bold']))
+                            profile.close()
+                            print(colored("CTRL^C To Continue\n\n\n",'red',attrs=['bold']))
+                            while True:
+                                try:
+                                    time.sleep(2)
+                                except KeyboardInterrupt:
+                                    try:
+                                        subprocess.call(":>"+vars.read_name+".gpg")
+                                        subprocess.call("rm "+vars.read_name+".gpg")
+                                    except Exception as e:
+                                        gears.clear()
+                                        print (e)
+                                        time.sleep(2)
+                                        pass
+                                    subprocess.call("gpg -r terminal --yes -e /usr/share/stalker/profiles/."+vars.read_name)
+                                    subprocess.call(":>/usr/share/stalker/profiles/."+vars.read_name)
+                                    subprocess.call("rm /usr/share/stalker/profiles/."+vars.read_name)
+                                    break
+                    except IOError:
+                        print(colored("That Profile Does Not Exsist!!!\nPerhaps You Should Create It!",'red',attrs=['bold']))
+                        time.sleep(2)
+                        pass
+                else:
+                    print(colored("Profile Does Not Exsist!!!",'red',attrs=['bold']))
+                    time.sleep(2)
+                    pass
+            except KeyboardInterrupt:
+                pass
+        else:
+	    print(colored("\nINVALID OPTION!!!",'red',attrs=['bold']))
+	    print(colored("\nYOU ARE NOT SMART ENOUGH TO USE THIS PROGRAM...\n      ***TERMINATING STALKER***"))
+            sys.exit(0)
+    else:
+	gears.stalker_logo()
+	print(colored("\n\nYou Must Enter An Option!!!",'yellow',attrs=['bold','underline']))
+
+while True:
+###################################
+#FIXME#
+#######
+#    pg.event.clear()
+#    event = pg.event.wait()
+#    pg.event.get()
+    for event in pg.event.get():
+#    try:
+        if event.type == QUIT:
+            pg.quit()
+            sys.exit()
+#        key = pg.key.get_pressed()
+###################################
+	stalker_logo2()
+#	try:
+#            opt = raw_input(colored("\n\n             >>  ",'green',attrs=['bold']))
+#	except KeyboardInterrupt:
+#	    print colored("USER HIT CTRL^C!!!\nTERMINATING STALKER...",'red',attrs=['bold'])
+#	    sys.exit(0)
+############################################################################
+############################################################################
+#############################################################################
+        if event.type == KEYUP and event.key == K_a:
+            try:
+		if vars.full_information == False:
+		    gears.full_info()
+		else:
+		    pass
+		gears.stalker_logo()
+	        profile_manager()
+	        name = str(vars.first_name)+"_"+str(vars.middle_name)+"_"+str(vars.last_name)
+	        address = str(vars.address)
+	        age = str(vars.age)
+	        dob = str(vars.dob)
+	        phone = str(vars.phone)
+	        sec_phone = str(vars.sec_phone)
+	        employer = str(vars.employer)
+	        employer_phone = str(vars.employer_phone)
+	        employer_address = str(vars.employer_address)
+	        job_title = str(vars.job_title)
+	        hobbies = str(vars.hobbies)
+		gears.stalker_logo()
+	    except KeyboardInterrupt:
+		subprocess.call(":>/usr/share/stalker/profiles/."+name)
+		subprocess.call("rm /usr/share/stalker/profiles/."+name)
+		gears.clear()
+		print(colored("\n\n\n\n\n\nProfile Not Added!!!",'red',attrs=['bold']))
+		time.sleep(2)
+#############################################################################
+#############################################################################
+#############################################################################
+        elif event.type == KEYUP and event.key == K_r:
+	    gears.stalker_logo()
+	    print(colored("Available Profiles: ",'red',attrs=['bold']))
+	    profile_lst = subprocess.check_output(["ls", "-a", "/usr/share/stalker/profiles/"],stderr=subprocess.PIPE, shell=False)
+	    print(colored(str(profile_lst),'blue',attrs=['bold']))
+	    print("\n\n")
+	    try:
+	        vars.read_name = input(colored("Enter Target Name: ",'red',attrs=['bold']))
+                path = "/usr/share/stalker/profiles/."+str(vars.read_name)
+		gears.clear()
+		if len(vars.read_name) > 1:
+		    try:
+                        subprocess.call(["gpg","--decrypt","/usr/share/stalker/profiles/.",vars.read_name,".gpg",">","/usr/share/stalker/profiles/.",vars.read_name])
+		    except Exception:
+			try:
+				os.system("gpg -d /usr/share/stalker/profiles/."+vars.read_name+".gpg > /usr/share/stalker/profiles/."+vars.read_name)
+			except Exception as e:
+			    print(colored(e,'red',attrs=['bold']))
+			    time.sleep(2)
+			    os.execv(sys.executable, ['python'] + sys.argv)
+		    time.sleep(2)
+		    try:
+	                with open("/usr/share/stalker/profiles/."+vars.read_name,'r') as profile:
+	                    data = profile.read()
+	                    print(colored("\n"+data,'blue',attrs=['bold']))
+	                    profile.close()
+			    print(colored("CTRL^C To Continue\n\n\n",'red',attrs=['bold']))
+			    while True:
+			        try:
+			            time.sleep(2)
+			        except KeyboardInterrupt:
+			            try:
+			                subprocess.call(":>"+vars.read_name+".gpg")
+        			        subprocess.call("rm "+vars.read_name+".gpg")
+    				    except Exception as e:
+        			        gears.clear()
+        			        print (e)
+        			        time.sleep(2)
+        			        pass
+    				    subprocess.call("gpg -r terminal --yes -e /usr/share/stalker/profiles/."+vars.read_name)
+    				    subprocess.call(":>/usr/share/stalker/profiles/."+vars.read_name)
+    				    subprocess.call("rm /usr/share/stalker/profiles/."+vars.read_name)
+				    break
+		    except IOError:
+		        print(colored("That Profile Does Not Exsist!!!\nPerhaps You Should Create It!",'red',attrs=['bold']))
+		        time.sleep(2)
+		        pass
+		else:
+		    print(colored("Profile Does Not Exsist!!!",'red',attrs=['bold']))
+		    time.sleep(2)
+		    pass
+	    except KeyboardInterrupt:
+		pass
+#############################################################################
+#############################################################################
+#############################################################################
+	elif event.type == KEYUP and event.key == K_e:
+	    gears.stalker_logo()
+            print("\n\n")
+            print(colored("Available Profiles: ",'red',attrs=['bold']))
+            profile_lst = subprocess.check_output(["ls", "-a", "/usr/share/stalker/profiles/"],stderr=subprocess.PIPE, shell=False)
+	    print(colored(profile_lst,'blue',attrs=['bold']))
+            print("\n\n")
+            try:
+                name = input(colored("Enter Target Name: ",'red',attrs=['bold']))
+		try:
+                    path = "/usr/share/stalker/profiles/."+name
+		    gpg_path = path+".gpg"
+		    print(colored("Using subprocess.call",'yellow',attrs=['bold']))
+		    time.sleep(2)
+		    subprocess.call(["gpg -d "+gpg_path+" > "+path],stderr=subprocess.PIPE,shell=False)
+		except OSError:
+		    try:
+			path = "/usr/share/stalker/profiles/."+name
+			gpg_path = path+".gpg"
+			print(colored("Using subprocess.Popen",'yellow',attrs=['bold']))
+			time.sleep(2)
+			subprocess.Popen("gpg -d "+gpg_path+" > "+path)
+		    except OSError:
+			try:
+			    print(colored("FALLING BACK TO OS.SYSTEM!!!",'red',attrs=['bold']))
+			    time.sleep(2)
+		            os.system("gpg -d "+gpg_path+" > "+path)
+			except OSError as e:
+			    print(colored("Here\'s What Went Wrong: \n   "+e,'red',attrs=['bold']))
+			    pass
+		time.sleep(2)
+                gears.clear()
+		try:
+                    subprocess.call(["nano ",path])
+		except OSError as e:
+		    print(colored(e,'red',attrs=['bold']))
+		    os.system("nano "+path)
+	        try:
+                    subprocess.call(":>"+vars.full_name+".gpg")
+	            subprocess.call("rm "+vars.full_name+".gpg")
+	        except OSError as e:
+	            gears.clear()
+	            print (e)
+		    print(colored("FALLING BACK ON OS.SYSTEM!!!",'red',attrs=['bold']))
+		    time.sleep(2)
+		    os.system(":>"+vars.full_name+".gpg")
+		    os.system("rm "+vars.full_name+".gpg")
+		    print(colored("Old Files Have Been Overwritten And Removed!",'green',attrs=['bold']))
+		    time.sleep(2)
+	            pass
+		try:
+	            subprocess.call("gpg -r terminal --yes -e /usr/share/stalker/profiles/."+vars.full_name)
+	            subprocess.call(":>/usr/share/stalker/profiles/."+vars.full_name)
+	            subprocess.call("rm /usr/share/stalker/profiles/."+vars.full_name)
+		except OSError as e:
+		    print (e)
+		    print(colored("I wasn\'t able to use subprocess.call...\n FALLING BACK TO OS.SYSTEM!!!",'red',attrs=['bold']))
+		    time.sleep(2)
+		    os.system("gpg -r terminal --yes -e /usr/share/stalker/profiles/."+vars.full_name)
+		    os.system(":>/usr/share/stalker/profiles/."+vars.full_name)
+		    os.system("rm /usr/share/stalker/profiles/."+vars.full_name)
+		    print(colored("File Removal And Encryption Success!",'green',attrs=['bold']))
+		    time.sleep(2)
+            except KeyboardInterrupt:
+                pass
+##############################################################################
+##############################################################################
+##############################################################################
+	elif event.type == KEYUP and event.key == K_s:
+	    if vars.basic_information == False:
+		gears.basic_info()
+	    else:
+		pass
+	    gears.stalker_logo()
+	    version = input(colored("Would you like to run stalker from a [",'yellow',attrs=['bold'])+colored("b",'red',attrs=['bold','underline'])+colored("]rowser or the [",'yellow',attrs=['bold'])+colored("t",'red',attrs=['bold','underline'])+colored("]erminal?\n   >> ",'yellow',attrs=['bold']))
+	    if version == "T" or version == "t" or version == "terminal" or version == "Terminal" or version == "TERMINAL":
+	        try:
+		    gears.stalker_logo()
+	            stalker()
+	        except KeyboardInterrupt:
+		    gears.clear()
+		    print(colored("\n\n\n\n\nUSER HIT CTRL^C\nSTOPPING STALKER...",'red',attrsa=['bold']))
+		    time.sleep(2)
+		    pass
+	    elif version == "B" or version == "b" or version == "browser" or version == "Browser" or version == "BROWSER":
+		try:
+		    gears.stalker_logo()
+		    stalker_gui()
+		except KeyboardInterrupt:
+		    gears.clear()
+                    print(colored("\n\n\n\n\nUSER HIT CTRL^C\nSTOPPING STALKER...",'red',attrsa=['bold']))
+                    time.sleep(2)
+                    pass
+	    else:
+		gears.stalker_logo()
+		print(colored("\nINVALID OPTION!!!\n"))
+		pass
+##############################################################################
+##############################################################################
+##############################################################################
+	elif event.type == KEYUP and event.key == K_p:
+	    try:
+		gears.stalker_logo()
+	        phone_num = input(colored("Enter Phone Number: ",'red',attrs=['bold']))
+                print(colored("Searching Zabasearch.com For Phone Number...",'blue',attrs=['bold']))
+    	        url = "http://www.zabasearch.com/phone/"+phone_num
+    	        time.sleep(2)
+		try:
+    	            try:
+        	        subprocess.call(["w3m "+url])
+      	            except OSError:
+        	        try:
+            	            subprocess.call(["wget -qO- "+url+" | html2text"])
+        	        except OSError:
+                            print(colored("I wasn\'t able to contact ZabaSearch...\n Let\'s try ",'red',attrs=['bold'])+google_logo)
+		            url = "https://www.google.com/q="+phone_num
+    		            time.sleep(2)
+    		            try:
+        		        subprocess.call(["w3m "+url])
+    		            except OSError:
+        		        try:
+        		            webbrowser.open(url)
+        		        except SysCallError:
+                                    print(colored("I wasn't able to contact ")+google_logo)
+				    time.sleep(2)
+			            pass
+		except Exception as e:
+		    print(colored("Here\'s what went wrong...\n"+e,'red',attrs=['bold']))
+		    time.sleep(2)
+	    except KeyboardInterrupt:
+		print(colored("USER HIT CTRL^C!!!\n    Phone Number Search Terminated..."))
+		time.sleep(2)
+		pass
+###############################################################################
+###############################################################################
+###############################################################################
+        elif event.type == KEYUP and event.key == K_q:
+	    gears.clear()
+	    print("\n\n\n\n\n")
+	    goodbye()
+	    time.sleep(2)
+	    sys.exit(0)
+##############################################################################
+##############################################################################
+        else:
+	    gears.stalker_logo()
+	    print(colored("\nI can not do that...",'red',attrs=['bold']))
+	    time.sleep(2)
+#    except KeyboardInterrupt:
+	print("User Hit CTRL^C\nEXITING STALKER...")
+	time.sleep(2)
+        sys.exit(0)
+##############################################################################
+######################################################################################################################
+######################################################################################################################
+######################################################################################################################
+# Coming In UPDATE {v1.2}:
+#    Facebook Directory Search
+#    Imporoved Phone Number Search
+#    ** Ability To Add Photos And Other Attatchments To Case Files ** {EXPIRAMENTAL} {[Possible SetBack Release v1.3]}
+#    Twitter Profile Search
+#		***Get First [x] Photos From Facebook Profile*** {v1.3 Update}
+#       	***Get {FaceBook/Twitter/LinkedIn/Instagram} Profile Pictures***{v1.3 Update}
+#		***'@User_Tweet' Twitter Search*** {v1.3 Update}
+#			*** Auto Get Google Map For Addresses Added To Profile *** {v1.4 Update}
+#######################################################################################################################
+
+# http://www.findpeoplesearch.com/
+# https://www.peoplelooker.com/lp/400200/2/loading?fn=Trey&ln=Waldrop&state=KY
+# topix.com

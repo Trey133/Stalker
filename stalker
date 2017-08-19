@@ -1,0 +1,433 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+##* move /usr/share/stalker/stalker.nanorc to /usr/share/nano/python.nanorc for easier editing #**
+##*
+# STALKER IS STILL UNDER DEVELOPMENT AND MAY NOT WORK AS PLANNED ** replace
+#WITH: SUBPROCESS\\\
+import subprocess
+import time
+import sys, getopt
+sys.path.insert(0, '/usr/share/stalker')
+import gears
+import variables as vars
+from termcolor import colored
+def logo():
+    gears.stalker_logo()
+def clear():
+#    subprocess.call("clear",'yellow',attrs=['bold'])
+    gears.clear()
+abv ={"Alabama":"AL","Alaska":"AK","Arizona":"AZ","Arkansas":"AR","California":"CA","Colorado":"CO","Connecticut":"CT","Delaware":"DE","Florida":"FL","Georgia":"GA","Hawaii":"HI","Idaho":"ID","Illinois":"IL","Indiana":"IN","Iowa":"IA","Kansas":"KS","Kentucky":"KY","Louisiana":"LA","Maine":"ME","Maryland":"MD","Massachusetts":"MA","Michigan":"MI","Minnesota":"MN","Mississippi":"MS","Missouri":"MO","Montana":"MT","Nebraska":"NE","Nevada":"NV","New Hampshire":"NH","New Jersey":"NJ","New Mexico":"NM","New York":"NY","North Carolina":"NC","NorthDakota":"ND","Ohio":"OH","Oklahoma":"OK","Oregon":"OR","Pennsylvania":"PA","Rhode Island":"RI","South Carolina":"SC","South Dakota":"SD","Tennessee":"TN","Texas":"TX","Utah":"UT","Vermont":"VT","Virginia":"VA","Washington":"WA","WestVirginia":"WV","Wisconsin":"WI","Wyoming":"WY","Washington DC":"DC"}
+google_logo =colored("G",'red',attrs=['bold'])+colored("O",'blue',attrs=['bold'])+colored("O",'yellow',attrs=['bold'])+colored("G",'magenta',attrs=['bold'])+colored("L",'green',attrs=['bold'])+colored("E",'cyan',attrs=['bold'])
+error = gears.Error()
+##*
+# THIS URL LIST IS NOT CURRENTLY USED BY STALKER BUT IT MAY BE USED IN UPDATES TO REDUCE PROGRAM WEIGHT
+#urls =#{'pipl':"https://www.pipl.com/search/?q="+fname+"+"+mname+"+"+lname+"&l="+city+"%2C+"+state+"&sloc=US|"+abv[state]+"|"+city+"&in=5",'find_mugs':"https://www.findmugshots.com/arrests/"+fname+"_"+lname+"_"+abv[state],'mugshots':"http://mugshots.com/search.html?q="+fname+"+"+lname,'white_pages':"https://whitepages.plus/n/"+fname+"_"+lname+"/location/"+city+"%252C_"+abv[state],'zaba_search':"http://www.zabasearch.com/people/"+fname+"+"+lname+"/"+abv[state]+"/",'google':"https://www.google.com/q="+fname+"+"+mname+"+"+lname+"+"+city+"+"+state} 
+#**
+############################################
+# MAIN_ADD
+############################################
+def main_add():
+    if vars.full_info == False and vars.basic_info == False:
+        try:
+            print colored("F",'red',attrs=['bold'])+colored("ull Profile or ",'yellow',attrs=['bold'])+colored("B",'red',attrs=['bold'])+colored("asic Profile",'yellow',attrs=['bold'])
+            profile_type = raw_input(colored("[full/basic]: ",'yellow',attrs=['bold']))
+            if profile_type == "f" or profile_type == "F" or profile_type == "Full" or profile_type == "full":
+                gears.full_info()
+            elif profile_type == "basic" or profile_type == "B" or profile_type == "Basic" or profile_type == "basic":
+                gears.basic_info()
+            else:
+                print colored("INVALIID OPTION!!!",'red',attrs=['bold'])
+                pass
+            try:
+                gears.profile_manager()
+            except Exception, e:
+                uc = "gears.profile_manager()"
+                problem = e
+                error.log(str(problem), uc)
+        except Exception, e:
+            uc = "stalker opt == add"
+            problem = e
+            error.log(str(problem), uc)
+    elif vars.full_info == True or vars.basic_info == True:
+        try:
+            gears.profile_manager()
+        except Exception, e:
+            uc = "gears.profile_manager()"
+            problem = e
+            error.log(str(problem), uc)
+    else:
+        print colored("There was a problem reading variables.py",'red',attrs=['bold'])
+###########################################################################
+###########################################################################
+#while True:
+def main(argv):
+    first_name = ''
+    middle_name = ''
+    last_name = ''
+    city = ''
+    state = ''
+    try:
+        opts, args = getopt.getopt(argv,"hARESf:m:l:c:s:p:",["add", "read", "edit", "stalk", "first=", "middle=", "last=", "city=", "state=", "phone="])
+    except getopt.GetoptError:
+        print ("stalker -f <first_name> -m <middle_name> -l <last_name> -c <city> -s <state> -A --add -R --read -E --edit -S")
+        sys.exit(2)
+    for opt, arg in opts:
+#    try:
+#        clear()
+#        gears.intro_stalker_logo()
+#        opt = raw_input(colored("\n\n Choose An Option: ",'green',attrs=['bold']))
+############################################################################
+############################################################################
+############################################################################
+        if opt == "-h":
+            print ("stalker -f <first_name> -m <middle_name> -l <last_name> -c <city> -s <state>  -A --add, -R --read, -E --edit, -S --stalk")
+        elif opt in ("-f", "--first"):
+            vars.first_name = arg
+        elif opt in ("-m", "--middle"):
+            vars.middle_name = arg
+        elif opt in ("-l", "--last"):
+            vars.last_name =  arg
+        elif opt in ("-c", "--city"):
+            vars.city = arg
+        elif opt in ("-s", "--state"):
+            vars.state = arg
+        elif opt == "-A" or opt == "--add":
+            logo()
+            print colored("// new profile // exsisting profile //",'yellow',attrs=['bold'])
+            new_old = raw_input(colored("[N/E]",'blue',attrs=['bold']))
+            if new_old == "new" or new_old == "NEW" or new_old == "New" or new_old == "N" or new_old == "n":
+                try:
+                    logo()
+                    main_add()
+                except Exception, e:
+                    uc = "add"
+                    problem = e
+                    error.log(str(problem), uc)
+                    logo()
+                    print (e)
+            elif new_old == "exsisting" or new_old == "EXSISTING" or new_old == "Exsisting" or new_old == "E" or new_old == "e":
+                logo()
+                profile_list = subprocess.check_output(["ls","/usr/share/stalker/profiles/"])
+                print colored(profile_list,'blue',attrs=['bold'])
+                first_name = raw_input(colored("First Name: ",'yellow',attrs=['bold']))
+                middle_name = raw_input(colored("Middle Name: ",'yellow',attrs=['bold']))
+                last_name = raw_input(colored("Last Name: ",'yellow',attrs=['bold']))
+                if len(middle_name) >= 1:
+                    vars.full_name = str(first_name)+"_"+str(middle_name)+"_"+str(last_name)
+                    full_name = str(first_name)+"_"+str(middle_name)+"_"+str(last_name)
+                else:
+                    full_name = str(first_name)+"_"+str(last_name)
+                    vars.full_name = str(first_name)+"_"+str(last_name)
+                gears.tpro.new()
+                profile = "/usr/share/stalker/profiles/%s/%s.txt"% (full_name, full_name)
+                try:
+                    with open("/usr/share/stalker/profiles/%s/%s.txt"% (full_name, full_name),'r') as profile:
+                        data = profile.read()
+                        print colored(data,'blue',attrs=['bold'])
+                        profile.close()
+                except IOError:
+                    print colored("That Profile Does Not Exsist!!!",'red',attrs=['bold'])
+                    problem = e
+                    uc = "add"
+                    error.log(str(problem), uc)
+                    time.sleep(2)
+                    gears.restart()
+                logo()
+                print colored("\nWhat Would You Like To Add To %s\'s Profile?\n"% full_name,'yellow',attrs=['bold'])
+                print colored("// Device // Vehicle // Marriage // Children // Psych //\n     // Personality // Address // Phone Number //\n// Social Media // Email // Employment // Arrest // Reference // ",'magenta',attrs=['bold'])
+                add_pro = raw_input(colored("[ADD]: ",'blue',attrs=['bold']))
+                if add_pro == "vehicle" or add_pro == "Vehicle":
+                    logo()
+                    gears.add_vehicle()
+                elif add_pro == "device" or add_pro == "Device":
+                    logo()
+                    print colored("What Kind Of Device Would You Like To Add?",'yellow',attrs=['bold'])
+                    print colored("\n// Access Point // Smartphone // Firewall // Tablet // Other //",'magenta',attrs=['bold'])
+                    add_device = raw_input(colored("[DEVICE]: ",'yellow',attrs=['bold']))
+                    if add_device == "Access Point" or add_device == "Access point" or add_device == "access point":
+                        logo()
+                        manufacturer = raw_input(colored("Device Manufacturer: ",'yellow',attrs=['bold']))
+                        logo()
+                        print colored("Ex: \'Linksys Wifi Router\' \'Hotspot\'",'black',attrs=['bold'])
+                        type = raw_input(colored("Device Type:",'yellow',attrs=['bold']))
+                        logo()
+                        mac_address = raw_input(colored("Mac Address: ",'yellow',attrs=['bold']))
+                        logo()
+                        ip_address = raw_input(colored("IP Address: ",'yellow',attrs=['bold']))
+                    elif add_device == "Smartphone" or add_device == "smartphone":
+                        logo()
+                        manufacturer = raw_input(colored("Device Manufacturer: ",'yellow',attrs=['bold']))
+                        logo()
+                        print colored("Ex: \'Galaxy S8 Active\' \'IPhone\'",'black',attrs=['bold'])
+                        type = raw_input(colored("Device Type:",'yellow',attrs=['bold']))
+                        logo()
+                        mac_address = raw_input(colored("Mac Address: ",'yellow',attrs=['bold']))
+                        logo()
+                        ip_address = raw_input(colored("IP Address: ",'yellow',attrs=['bold']))
+                    elif add_device == "FireWall" or add_device == "Firewall" or add_device == "firewall":
+                        logo()
+                        manufacturer = raw_input(colored("Device Manufacturer: ",'yellow',attrs=['bold']))
+                        logo()
+                        print colored("Ex: \'Linksys Wifi Router\' \'Hotspot\'",'black',attrs=['bold'])
+                        type = raw_input(colored("Device Type:",'yellow',attrs=['bold']))
+                        logo()
+                        mac_address = raw_input(colored("Mac Address: ",'yellow',attrs=['bold']))
+                        logo()
+                        ip_address = raw_input(colored("IP Address: ",'yellow',attrs=['bold']))
+                    elif add_device == "Tablet" or add_device == "tablet":
+                        logo()
+                        manufacturer = raw_input(colored("Device Manufacturer: ",'yellow',attrs=['bold']))
+                        logo()
+                        print colored("Ex: \'Android\' \'IPad\'",'black',attrs=['bold'])
+                        type = raw_input(colored("Device Type:",'yellow',attrs=['bold']))
+                        logo()
+                        mac_address = raw_input(colored("Mac Address: ",'yellow',attrs=['bold']))
+                        logo()
+                        ip_address = raw_input(colored("IP Address: ",'yellow',attrs=['bold']))
+                    elif add_device == "other" or add_device == "Other":
+                        logo()
+                        manufacturer = raw_input(colored("Device Manufacturer: ",'yellow',attrs=['bold']))
+                        logo()
+                        print colored("Ex: \'Drone\' \'Wireless Camera\'",'black',attrs=['bold'])
+                        type = raw_input(colored("Device Type:",'yellow',attrs=['bold']))
+                        logo()
+                        mac_address = raw_input(colored("Mac Address: ",'yellow',attrs=['bold']))
+                        logo()
+                        ip_address = raw_input(colored("IP Address: ",'yellow',attrs=['bold']))
+                elif add_pro == "Personality" or add_pro == "personality":
+                    try:
+                        logo()
+                        gears.p_test()
+                    except Exception, e:
+                        problem = e
+                        uc = "gears.p_test()"
+                        error.log(str(problem), uc)
+                elif add_pro == "Social Media" or add_pro == "Social media" or add_pro == "social media":
+                    logo()
+                    site = raw_input(colored("Social Networking Site: ",'yellow',attrs=['bold']))
+                    logo()
+                    user_name = raw_input(colored("User Name: ",'yellow',attrs=['bold']))
+                    logo()
+                    url = raw_input(colored("URL: ",'yellow',attrs=['bold']))
+                    ref = gears.target.Reference()
+                    ref.soc_media(site, user_name, url)
+                elif add_pro == "Phone" or add_pro == "phone":
+                    logo()
+                    phone = raw_input(colored("Phone Number: "))
+                    gears.target.phone(phone)
+                elif add_pro == "Email" or add_pro == "EMail" or add_pro == "email":
+                    logo()
+                    email = raw_input(colored("Email: "))
+                    gears.target.email(email)
+                elif add_pro == "address" or add_pro == "Address":
+                    logo()
+                    address = raw_input(colored("Street Address: ",'yellow',attrs=['bold']))
+                    logo()
+                    city = raw_input(colored("City: ",'yellow',attrs=['bold']))
+                    logo()
+                    state = raw_input(colored("State: ",'yellow',attrs=['bold']))
+                    gears.target.address(address, city, state)
+                elif add_pro == "Marriage" or add_pro == "marriage":
+                    logo()
+                    print colored("Type N/A For \'Not Applicable\'",'magenta',attrs=['bold'])
+                    time.sleep(2)
+                    logo()
+                    spouse = raw_input(colored("Spouse: ",'yellow',attrs=['bold']))
+                    logo()
+                    children = raw_input(colored("Children:",'yellow',attrs=['bold']))
+                    logo()
+                    joint_assets = raw_input(colored("Joint Assets: ",'yellow',attrs=['bold']))
+                    marriage = gears.target.Bio.Marriage()
+                    marriage.marriage(spouse, children, joint_assets)
+                elif add_pro == "Children" or add_pro == "children":
+                    new = gears.target.Bio.Children()
+                    logo()
+                    name = raw_input(colored("Child\'s Name: ",'yellow',attrs=['bold']))
+                    logo()
+                    age = raw_input(colored("Age: ",'yellow',attrs=['bold']))
+                    logo()
+                    dob = raw_input(colored("DOB: ",'yellow',attrs=['bold']))
+                    logo()
+                    school = raw_input(colored("School: ",'yellow',attrs=['bold']))
+                    new.kid(name, dob, age, school)
+                elif add_pro == "Psych" or add_pro == "psych":
+                    logo()
+                    facility = raw_input(colored("Facility: ",'yellow',attrs=['bold']))
+                    logo()
+                    status = raw_input(colored("Status: ",'yellow',attrs=['bold']))
+                    logo()
+                    notes = raw_input(colored("Notes: ",'yellow',attrs=['bold']))
+                    add_psych = gears.target.Bio.Psych()
+                    add_psych.psych_profile(facility, status, notes)
+                elif add_pro == "Employment" or add_pro == "employment":
+                    logo()
+                    job = gears.target.Employment()
+                    logo()
+                    co_name = raw_input(colored("Company Name: ",'yellow',attrs=['bold']))
+                    logo()
+                    title = raw_input(colored("Job Title: ",'yellow',attrs=['bold']))
+                    logo()
+                    phone = raw_input(colored("Company\'s Phone Number: ",'yellow',attrs=['bold']))
+                    logo()
+                    address = raw_input(colored("Company\'s Address: ",'yellow',attrs=['bold']))
+                    logo()
+                    job.workplace(co_name, title, phone, address)
+                elif add_pro == "Arrest" or add_pro == "arrest":
+                    logo()
+                    arrest = gears.target.Bio.Arrest()
+                    logo()
+                    date = raw_input(colored("Arrest Date: ",'yellow',attrs=['bold']))
+                    logo()
+                    charge = raw_input(colored("Charge(s): ",'yellow',attrs=['bold']))
+                    logo()
+                    city = raw_input(colored("City: ",'yellow',attrs=['bold']))
+                    logo()
+                    state = raw_input(colored("State: ",'yellow',attrs=['bold']))
+                    logo()
+                    officer = raw_input(colored("Arresting Officer: ",'yellow',attrs=['bold']))
+                    logo()
+                    ruling = raw_input(colored("Judge\'s Ruling: ",'yellow',attrs=['bold']))
+                    logo()
+                    sentence = raw_input(colored("Sentence: ",'yellow',attrs=['bold']))
+                    arrest.offense(date, charge, city, state, officer, ruling, sentence)
+                elif add_pro == "Reference" or add_pro == "reference":
+                    reference = gears.target.Reference()
+                    logo()
+                    site = raw_input(colored("URL: ",'yellow',attrs=['bold']))
+                    logo()
+                    with open(profile,'w') as add_profile:
+                        add_profile.write(("#")*50+"\n%s\'s References"+(("#")*50)+"\n")
+                        add_profile.close()
+                    reference.site(url, profile)
+            else:
+                logo()
+                print colored("INVALID OPTION!!!",'red',attrs=['bold','underline'])
+#############################################################################
+#############################################################################
+#############################################################################
+        elif opt == "-R" or opt == "--read":
+#            profile_list = subprocess.check_output(["ls","/usr/share/stalker/profiles/"])
+#            print colored(profile_list,'blue',attrs=['bold'])
+#            first_name = raw_input(colored("First Name: ",'yellow',attrs=['bold']))
+#            middle_name = raw_input(colored("Middle Name: ",'yellow',attrs=['bold']))
+#            last_name = raw_input(colored("Last Name: ",'yellow',attrs=['bold']))
+            if len(vars.middle_name) >= 1:
+                vars.full_name = str(vars.first_name)+"_"+str(vars.middle_name)+"_"+str(vars.last_name)
+            else:
+                vars.full_name = str(vars.first_name)+"_"+str(vars.last_name)
+            with open("/usr/share/stalker/profiles/%s/%s.txt"% (vars.full_name, vars.full_name),'r') as profile:
+                data = profile.read()
+                print colored(data,'blue',attrs=['bold'])
+                profile.close()
+            while True:
+                try:
+                    time.sleep(10)
+                except KeyboardInterrupt:
+                    break
+#############################################################################
+#############################################################################
+#############################################################################
+        elif opt == "-E" or opt == "--edit":
+#            profile_list = subprocess.check_output(["ls","/usr/share/stalker/profiles/"])
+#            print colored(profile_list,'blue',attrs=['bold'])
+#            first_name = raw_input(colored("First Name: ",'yellow',attrs=['bold']))
+#            middle_name = raw_input(colored("Middle Name: ",'yellow',attrs=['bold']))
+#            last_name = raw_input(colored("Last Name: ",'yellow',attrs=['bold']))
+            if len(vars.middle_name) >= 1:
+                vars.full_name = str(vars.first_name)+"_"+str(vars.middle_name)+"_"+str(vars.last_name)
+            else:
+                vars.full_name = str(vars.first_name)+"_"+str(vars.last_name)
+            try:
+                subprocess.call(["nano","/usr/share/stalker/profiles/%s/%s.txt"% (vars.full_name, vars.full_name)])
+            except Exception, e:
+                print colored("A Profile Does Not Exist For %s!"% vars.full_name,'red',attrs=['bold'])
+##############################################################################
+##############################################################################
+##############################################################################
+#FIXME
+        elif opt in ("-S", "--stalk"):
+#            vars.first_name = first_name
+#            vars.middle_name = middle_name
+#            vars.last_name = last_name
+#            vars.city = city
+#            vars.state = state
+#            print ("First Name: %s"% first_name)
+#            if vars.intro == True:
+            try:
+#                gears.basic_info()
+                gears.stalker()
+            except KeyboardInterrupt:
+                clear()
+                print colored("\n\n\n\n\nUSER HIT CTRL^C\nSTOPPING STALKER...",'red',attrs=['bold'])
+                time.sleep(2)
+                pass
+ #           elif vars.intro != True:
+ #               try:
+ #                   gears.intro()
+ #                   vars.intro = True
+ #                   gears.stalker()
+ #               except Exception, e:
+ #                   problem = e
+ #                   print (e)
+ #                   print colored("Something Went Wrong...\n"+str(problem),'red',attrs=['bold'])
+ #                   time.sleep(2)
+##############################################################################
+##############################################################################
+##############################################################################
+        elif opt in ("-p", "--phone"):
+            vars.phone = arg
+            gears.phone_search()
+###############################################################################
+###############################################################################
+###############################################################################
+#        elif opt == "error_log":
+#            subprocess.call(["stty", "-echo"])
+#            password = raw_input(colored("What\'s The Magic Word\n|?|: ",'yellow',attrs=['bold']))
+#            print colored("\n",'yellow',attrs=['bold'])
+#            subprocess.call(["stty", "echo"])
+#            if password == "5h0wm37h310g":
+#                with open("/usr/share/stalker/error.log",'r') as log:
+#                    data = log.read()
+#                    print colored(data,'red',attrs=['bold'])
+#                    log.close()
+#                while True:
+#                    try:
+#                        time.sleep(180)
+#                    except KeyboardInterrupt:
+#                        break
+#            else:
+#                print colored("Oh I\'m sorry...\n That\'s not even close.\n Dumbass...",'black',attrs=['bold'])
+###############################################################################
+###############################################################################
+###############################################################################
+#        elif opt == "quit" or opt == "q":
+#            clear()
+#            print colored("\n\n\n\n\n",'yellow',attrs=['bold'])
+#            gears.goodbye()
+#            time.sleep(2)
+#            sys.exit(0)
+##############################################################################
+##############################################################################
+#        else:
+#            clear()
+#            print colored("\nI can not %s..."% str(opt),'red',attrs=['bold'])
+#            time.sleep(1)
+##############################################################################
+#    except KeyboardInterrupt:
+#        print colored("\nUser Pressed CTRL^C\n Please Exit Correctly Next Time...",'red',attrs=['bold'])
+#        sys.exit(0)
+######################################################################################################################
+#UPDATE###############################################################################################################
+######################################################################################################################
+# Coming In Update {v1.2}:
+#    Facebook Directory Search LinkedIn Search Imporoved Phone Number Search ** Ability To Add Photos And Other Attatchments
+#    To Case Files ** {EXPIRAMENTAL} {[Possible SetBack Release v1.3]} Twitter Profile Search
+#        ***Get First [x] Photos From Facebook Profile*** {v1.3 Update}
+#           ***Get {FaceBook/Twitter/LinkedIn/Instagram} Profile Pictures***{v1.3 Update}
+#        ***'@User_Tweet' Twitter Search*** {v1.3 Update}
+#            *** Auto Get Google Map For Addresses Added To Profile *** {v1.4 Update}
+#######################################################################################################################
+        elif opt != "-h" and opt != "-f" and opt != "--first" and opt != "-m" and opt != "--middle" and opt != "-l" and opt != "--last" and opt != "-c" and opt != "--city" and opt != "-s" and opt != "--state" and opt != "-A" and opt != "--add" and opt != "-E" and opt != "--edit" and opt != "-R" and opt != "--read" and opt != "-S" and opt != "--stalk":
+            print ("stalker -f <first_name> -m <middle_name> -l <last_name> -c <city> -s <state>  -A --add, -R --read, -E --edit, -S --stalk")
+if __name__ == "__main__":
+    main(sys.argv[1:])

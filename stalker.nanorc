@@ -1,0 +1,82 @@
+###
+#Editing Stalker Is Easier If You Save This File
+#As /usr/share/nano/python.nanorc And Use Nano
+#To Edit The Program
+###
+
+syntax "python" "\.py$"
+header "^#!.*python[-0-9._]*"
+linter pyflakes
+comment "#"
+
+#Valid colors are "green", "red", "blue",
+#"white", "yellow", "cyan", "magenta" and
+#"black", with the optional prefix "bright"
+#for foreground colors.
+
+# Function definitions.
+color brightwhite "def [0-9A-Z_]+"
+
+# Keywords.
+color brightcyan "\<(and|as|assert|break|class|continue|del|exec|finally|for|from)\>"
+color brightmagenta "\<(global|if|import|in|is|lambda|not|or|pass|raise|return|try|while|with|yield)\>"
+color brightred "\<(subprocess|except|else|elif|close|sleep)\>"
+color brightyellow "\<(print|def|write|attrs)\>"
+color brightgreen "\<(open)\>"
+color cyan "\<(len|str|int)\>"
+color magenta "\<(input)\>"
+color cyan "\<(KeyboardInterrupt|OSError|IOError|Exception|sys)\>"
+color white "\<(time)\>"
+
+# Developers/Programs
+color brightgreen "\<9R0GR4M13|program13|Program13|Terminal|73RM1N41|D34D9001|d34d9001)\>"
+
+# Single-quoted strings.
+color brightgreen "'([^'\]|\\.)+'"
+
+# Double Quotes Strings
+color brightblue ""([^"\]|\\.)+""
+
+# Punctuation
+color brightyellow "([:._,])"
+color brightred "([!-=+<>])"
+
+# Numbers
+color brightmagenta "([1234567890])"
+
+# Comments.
+color brightblack "(^|[[:blank:]])#.*$"
+#########################################################################
+# Fix
+color brightyellow,red start="(^|[[:blank:]])#FIXME.*$" end="###"
+#Remove
+color brightyellow,blue  start="(^|[[:blank:]])#REMOVE.*$" end="#\\\\\\"
+#Replace
+color black,blue  start="(^|[[:blank:]])#replace.*$" end="\\\\\\"
+#Notes From The Developer
+color black,green  start="(^|[[:blank:]])##\*.*$" end="#\*\*"
+#########################################################################
+# Triple-quoted strings.
+color brightyellow    start="'''[^'),]" end="(^|[^(\])'''"
+color brightgreen start="\"\"\"[^"),]" end="(^|[^(\])\"\"\""
+
+# True
+color brightgreen "\<(True)\>"
+
+# False
+color brightred "\<(False)\>"
+
+# Reminders.
+color brightyellow,red "(FIXME|TODO|XXX|UPDATE|REWORK)"
+color black,red "(#SECURITYRISK)"
+color red,black "(REPLACE WITH:)"
+color magenta,black "(IMPORTED FOR:)"
+color brightwhite,red "(FORMAT)"
+
+# Trailing whitespace.
+color ,red "[[:space:]]+$"
+
+## SecurityRisks
+color black,red "\<(os.system)\>"
+
+
